@@ -145,7 +145,7 @@ namespace websocket {
         }
         
         
-        void do_send(std::string &msg){
+        void do_send(const std::string &msg){
             if (!_socket.is_open())
                 return;
             // TODO: break up into 127-byte blocks if reqd
@@ -238,10 +238,11 @@ namespace websocket {
                                              }
                                              if (s == "close")
                                                  do_close();
-                                             else if (s == "echo")
-                                                 do_send(s);
-                                             else
-                                                 do_read();
+                                             else {
+                                                if (s.substr(0, 5) == "echo:")
+                                                    do_send(s.substr(5));
+                                                do_read();
+                                             }
                                          }
                                          else {
                                              std::cout << (boost::system::system_error(ec).what()) << std::endl;
